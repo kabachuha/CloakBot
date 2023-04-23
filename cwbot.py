@@ -54,6 +54,7 @@ async def on_message(message):
         # Check if the last message sent by the user was a content warning
         if user_id in last_messages:
             content_warning = last_messages[user_id].content.lower().startswith("content warning") or last_messages[user_id].content.lower().startswith("cw:")
+
         for attachment in message.attachments:
             # Check if the attachment is marked as a spoiler and if the last message was a content warning
             if not attachment.is_spoiler() and not content_warning:
@@ -64,7 +65,7 @@ async def on_message(message):
                 await message.channel.send(warning_message)
                 await message.delete()
                 return
-                
+        
         for embed in message.embeds:
             # Check if the attachment is marked as a spoiler and if the last message was a content warning
             print(surrounding_chars(str(message.content), str(embed.url)))
@@ -72,7 +73,7 @@ async def on_message(message):
             has_spoiler = surrounding_chars(str(message.content), str(embed.url)) == ['||||']
             has_cw = message.content.lower().startswith("cw:") or message.content.lower().startswith("content warning")
             print(has_spoiler, has_cw)
-            if not has_spoiler and not has_cw:
+            if not has_spoiler and not content_warning:
                 print('Unspoled embed url detected!')
                 # Delete the message
                 # Send a warning to the user
