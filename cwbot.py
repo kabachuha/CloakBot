@@ -72,7 +72,7 @@ async def on_message(message):
             has_spoiler = surrounding_chars(str(message.content), str(embed.url)) == ['||||']
             has_cw = message.content.lower().startswith("cw:") or message.content.lower().startswith("content warning")
             print(has_spoiler, has_cw)
-            if not has_spoiler or (has_spoiler and not has_cw):
+            if not has_spoiler and not has_cw:
                 print('Unspoled embed url detected!')
                 # Delete the message
                 # Send a warning to the user
