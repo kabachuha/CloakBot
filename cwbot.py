@@ -22,6 +22,20 @@ last_messages = {}
 async def on_ready():
     print(f'We have logged in as {bot.user}')
 
+def surrounding_chars(text, sequence, context_size=2):
+    results = []
+    index = 0
+    while index < len(text):
+        index = text.find(sequence, index)
+        if index == -1:
+            break
+        start = max(0, index - context_size)
+        end = min(len(text), index + len(sequence) + context_size)
+        surrounding = text[start:index] + text[index + len(sequence):end]
+        results.append(surrounding)
+        index += len(sequence)
+    return results
+
 @bot.event
 async def on_message(message):
     # Ignore messages from the bot itself
@@ -33,18 +47,33 @@ async def on_message(message):
 
     # Check if the message contains attachments
     print(message)
-    if len(message.attachments) > 0:
+    if len(message.attachments) > 0 or len(message.embeds) > 0:
         print('has attachments')
         content_warning = False
 
         # Check if the last message sent by the user was a content warning
         if user_id in last_messages:
             content_warning = last_messages[user_id].content.lower().startswith("content warning") or last_messages[user_id].content.lower().startswith("cw:")
-
         for attachment in message.attachments:
             # Check if the attachment is marked as a spoiler and if the last message was a content warning
             if not attachment.is_spoiler() and not content_warning:
                 print('Unspoled image detected!')
+                # Delete the message
+                # Send a warning to the user
+                warning_message = f"{message.author.mention}, please add a spoiler to your media message and write a content warning before sending spoiler-covered media. Write 'Content warning' or 'CW:' in the start of the message"
+                await message.channel.send(warning_message)
+                await message.delete()
+                return
+                
+        for embed in message.embeds:
+            # Check if the attachment is marked as a spoiler and if the last message was a content warning
+            print(surrounding_chars(str(message.content), str(embed.url)))
+            print(message.content)
+            has_spoiler = surrounding_chars(str(message.content), str(embed.url)) == ['||||']
+            has_cw = message.content.lower().startswith("cw:") or message.content.lower().startswith("content warning")
+            print(has_spoiler, has_cw)
+            if not has_spoiler or (has_spoiler and not has_cw):
+                print('Unspoled embed url detected!')
                 # Delete the message
                 # Send a warning to the user
                 warning_message = f"{message.author.mention}, please add a spoiler to your media message and write a content warning before sending spoiler-covered media. Write 'Content warning' or 'CW:' in the start of the message"
