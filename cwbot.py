@@ -56,7 +56,7 @@ async def on_message(message):
             content_warning = last_messages[user_id].content.lower().startswith("content warning") or last_messages[user_id].content.lower().startswith("cw:")
         for attachment in message.attachments:
             # Check if the attachment is marked as a spoiler and if the last message was a content warning
-            if not attachment.is_spoiler() or (attachment.is_spoiler() and not content_warning):
+            if not attachment.is_spoiler() and not content_warning:
                 print('Unspoled image detected!')
                 # Delete the message
                 # Send a warning to the user
