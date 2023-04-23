@@ -10,6 +10,11 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+key = ""
+
+with open('key.txt', 'r') as id_file:
+    key = id_file.readline()
+
 # Dictionary to store the last message sent by each user
 last_messages = {}
 
@@ -53,4 +58,4 @@ async def on_message(message):
     # Process commands if any
     await bot.process_commands(message)
 
-bot.run('')# PUT YOUR BOT ID HERE
+bot.run(key)
