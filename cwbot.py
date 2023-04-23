@@ -47,19 +47,17 @@ async def on_message(message):
 
     # Check if the message contains attachments
     print(message)
-    if len(message.attachments) > 0 or len(message.embeds) > 0:
+    if len(message.attachments) > 0:
         print('has attachments')
         content_warning = False
 
         # Check if the last message sent by the user was a content warning
         if user_id in last_messages:
             content_warning = last_messages[user_id].content.lower().startswith("content warning") or last_messages[user_id].content.lower().startswith("cw:")
-        content_warning = content_warning or message.content.lower().startswith("cw:") or message.content.lower().startswith("content warning")
 
         for attachment in message.attachments:
             # Check if the attachment is marked as a spoiler and if the last message was a content warning
-            print(attachment.is_spoiler(), content_warning)
-            if ((not attachment.is_spoiler()) or (attachment.is_spoiler() and not content_warning)) and not (attachment.is_spoiler() and content_warning):
+            if not attachment.is_spoiler() and not content_warning:
                 print('Unspoled image detected!')
                 # Delete the message
                 # Send a warning to the user
@@ -68,21 +66,7 @@ async def on_message(message):
                 await message.channel.send(warning_message)
                 await message.delete()
                 return
-        
-        for embed in message.embeds:
-            # Check if the attachment is marked as a spoiler and if the last message was a content warning
-            print(surrounding_chars(str(message.content), str(embed.url)))
-            print(message.content)
-            has_spoiler = surrounding_chars(str(message.content), str(embed.url)) == ['||||']
-            print(has_spoiler, content_warning)
-            if ((not has_spoiler) or (has_spoiler and not content_warning)) and not (attachment.is_spoiler() and content_warning):
-                print('Unspoled embed url detected!')
-                # Delete the message
-                # Send a warning to the user
-                warning_message = f"{message.author.mention}, please add a spoiler to your media message and write a content warning before sending spoiler-covered media. Write 'Content warning' or 'CW:' in the start of the message"
-                await message.channel.send(warning_message)
-                await message.delete()
-                return
+
 
     # Update the last message sent by the user
     last_messages[user_id] = message
