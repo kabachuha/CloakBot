@@ -47,7 +47,7 @@ async def on_message(message):
 
     # Check if the message contains attachments
     print(message)
-    if len(message.attachments) > 0 or len(message.embeds) > 0:
+    if len(message.attachments) > 0:
         print('has attachments')
         content_warning = False
 
@@ -62,6 +62,7 @@ async def on_message(message):
                 # Delete the message
                 # Send a warning to the user
                 warning_message = f"{message.author.mention}, please add a spoiler to your media message and write a content warning before sending spoiler-covered media. Write 'Content warning' or 'CW:' in the start of the message"
+                #await interaction.response.send_message(warning_message, ephemeral=True)
                 await message.channel.send(warning_message)
                 await message.delete()
                 return
